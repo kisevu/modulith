@@ -3,6 +3,7 @@ package com.ameda.kev.smartparkingmodulith.allocation.domain.repository;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slot;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slots;
+import com.ameda.kev.smartparkingmodulith.allocation.entity.SlotEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -28,7 +29,19 @@ public interface SlotRepository {
                               Blocks block,
                               Slots slot,
                               UUID publicId);
+
     List<Slot> findAvailableSlots();
+
     Optional<Slot> findByOwnerIdNo(@Param("ownerIdNo") String ownerIdNo);
+
     long countOccupiedByBlock(Blocks block);
+
+    List<SlotEntity> findAvailableSlotsByBlock(@Param("blockName") Blocks blockName);
+
+    int countAvailableSlotsByBlock(@Param("blockName") Blocks blockName);
+
+    void allocateSlot(@Param("slotId") Long slotId, @Param("person") String person);
+
+    Optional<SlotEntity> findById(Long id);
+
 }

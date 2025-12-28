@@ -50,16 +50,12 @@ public class SlotEntity extends AbstractAuditing<Long> {
     private String ownerIdNo;
 
     @Enumerated(EnumType.STRING)
-    @Column( name = "assigned_block")
-    private Blocks block;
-
-    @Enumerated(EnumType.STRING)
     @Column( name = "assigned_slot")
     private Slots slot;
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinColumn(name = "bloc_id", referencedColumnName = "id")
-    private ABlockEntity aBlockEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "block_id")
+    private ABlockEntity block;
 
 
     public SlotEntity() {
@@ -70,7 +66,6 @@ public class SlotEntity extends AbstractAuditing<Long> {
                       String vehicleRegNo,
                       String ownerIdNo,
                       String ownerName,
-                      Blocks block,
                       Slots slot,
                       ABlockEntity aBlockEntity) {
         this.id = id;
@@ -82,9 +77,8 @@ public class SlotEntity extends AbstractAuditing<Long> {
         this.vehicleRegNo = vehicleRegNo;
         this.ownerName = ownerName;
         this.ownerIdNo = ownerIdNo;
-        this.block = block;
+        this.block = aBlockEntity;
         this.slot = slot;
-        this.aBlockEntity = aBlockEntity;
     }
 
     public static Slot fromDomain(SlotEntity slotEntity){
@@ -98,7 +92,6 @@ public class SlotEntity extends AbstractAuditing<Long> {
                .vehicleRegNo(slotEntity.getVehicleRegNo())
                .ownerName(slotEntity.getOwnerName())
                .ownerIdNo(slotEntity.getOwnerIdNo())
-               .block(slotEntity.getBlock())
                .slot(slotEntity.getSlot())
                .build();
     }
@@ -113,7 +106,6 @@ public class SlotEntity extends AbstractAuditing<Long> {
                 .vehicleRegNo(slot.getVehicleRegNo())
                 .ownerName(slot.getOwnerName())
                 .ownerIdNo(slot.getOwnerIdNo())
-                .block(slot.getBlock())
                 .slot(slot.getSlot())
                 .build();
 
@@ -192,14 +184,6 @@ public class SlotEntity extends AbstractAuditing<Long> {
         this.ownerIdNo = ownerIdNo;
     }
 
-    public Blocks getBlock() {
-        return block;
-    }
-
-    public void setBlock(Blocks block) {
-        this.block = block;
-    }
-
     public Slots getSlot() {
         return slot;
     }
@@ -209,11 +193,11 @@ public class SlotEntity extends AbstractAuditing<Long> {
     }
 
     public ABlockEntity getaBlockEntity() {
-        return aBlockEntity;
+        return block;
     }
 
     public void setaBlockEntity(ABlockEntity aBlockEntity) {
-        this.aBlockEntity = aBlockEntity;
+        this.block = aBlockEntity;
     }
 
     @Override

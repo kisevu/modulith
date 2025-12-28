@@ -2,8 +2,8 @@ package com.ameda.kev.smartparkingmodulith.allocation.services;
 
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slot;
-import com.ameda.kev.smartparkingmodulith.allocation.domain.Slots;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.repository.SlotRepository;
+import com.ameda.kev.smartparkingmodulith.allocation.entity.SlotEntity;
 import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import com.ameda.kev.smartparkingmodulith.shared.domain.VehicleEventObj;
 import com.ameda.kev.smartparkingmodulith.shared.events.VehicleParkingEvent;
@@ -13,6 +13,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
@@ -30,6 +31,7 @@ public class SlotApplicationService {
         this.slotService = new SlotService(slotRepository);
     }
 
+    @Transactional
     public Slot  createSlot(Slot slot){
         return slotService.createSlot(slot);
     }
@@ -62,26 +64,39 @@ public class SlotApplicationService {
                 log.info("Successfully allocated a slot: {}", slot.getSlot());
             }
         }
-
-
     }
 
-    public boolean isBlockFull(Blocks block){
-        Long occupiedCount = slotService.countByOccupiedBlock(block);
-        return  occupiedCount >= block.getMaxSlots();
-    }
-
-
+    @Transactional(readOnly = true)
     public Optional<Slot> getAslot(PublicId slotPublicId){
         return slotService.getASlot(slotPublicId);
 
     }
 
+    @Transactional(readOnly = true)
     public Page<Slot> getSlots(Pageable pageable){
         return null;
     }
 
-    private void createBlock(){
-
+    @Transactional
+    public SlotEntity assignParking(Blocks blockName, String person){
+        List<SlotEntity> available = slotService.findAvailableSlotsByBlock(blockName);
+        if (available.isEmpty()){
+            throw new RuntimeException(" Block "+ blockName+ " is full");
+        }
+        SlotEntity slotEntity = available.get(0);
+        slotService.allocateSlot(slotEntity.getId(),person);
+        return slotEntity;
     }
+
+    public void deallocate(Long slotId){
+        Slot slot = slotService.findById(slotId).orElseThrow();
+        slot.setAvailableSlot(true);
+        slot.setAllocatedPerson(null);
+        slotService.createSlot(slot);
+    }
+
+    public boolean isBlockFull(Blocks blockName){
+        return slotService.countAvailableSlotsByBlock(blockName) == 0;
+    }
+
 }

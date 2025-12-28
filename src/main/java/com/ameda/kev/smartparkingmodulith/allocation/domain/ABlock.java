@@ -2,7 +2,7 @@ package com.ameda.kev.smartparkingmodulith.allocation.domain;
 
 import com.ameda.kev.smartparkingmodulith.allocation.entity.ABlockEntity;
 import com.ameda.kev.smartparkingmodulith.allocation.entity.ABlockEntityBuilder;
-import com.ameda.kev.smartparkingmodulith.allocation.entity.ASlotEntity;
+import com.ameda.kev.smartparkingmodulith.allocation.entity.SlotEntity;
 import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import org.jilt.Builder;
 
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.RecursiveTask;
 
 /**
  * Author: kev.Ameda
@@ -23,30 +22,24 @@ public class ABlock {
     private Instant assignedTime;
     private Instant releaseTime;
     private Blocks block;
-    private ParkingSlotEnum parkingSlotEnum;
-    private Set<String> blockInitials;
-    private List<ASlot> slots = new ArrayList<>();
+    private List<Slot> slots = new ArrayList<>();
     private PublicId publicId;
 
     public ABlock() {
     }
 
     public ABlock(Instant assignedTime, Instant releaseTime,
-                  Blocks block, ParkingSlotEnum parkingSlotEnum,
-                  Set<String> blockInitials,
-                  List<ASlot> slots, PublicId publicId) {
+                  Blocks block,
+                  List<Slot> slots, PublicId publicId) {
         this.assignedTime = assignedTime;
         this.releaseTime = releaseTime;
         this.block = block;
-        this.parkingSlotEnum = parkingSlotEnum;
-        this.blockInitials = blockInitials;
         this.slots = slots;
         this.publicId = publicId;
     }
 
     public  void initDefaultFields(){
         this.publicId = new PublicId(UUID.randomUUID());
-        this.blockInitials = Set.of("BLOCKA","BLOCKB","BLOCKC");
     }
 
     public static ABlock toDomain(ABlockEntity aBlockEntity){
@@ -54,9 +47,7 @@ public class ABlock {
                 .assignedTime(aBlockEntity.getAssignedTime())
                 .releaseTime(aBlockEntity.getReleaseTime())
                 .block(aBlockEntity.getBlock())
-                .parkingSlotEnum(aBlockEntity.getParkingStatus())
-                .blockInitials(aBlockEntity.getBlockInitials())
-                .slots(aBlockEntity.getSlots().stream().map(ASlotEntity::toDomain).toList())
+                .slots(aBlockEntity.getSlots().stream().map(SlotEntity::fromDomain).toList())
                 .publicId(new PublicId(aBlockEntity.getPublicId()))
                 .build();
     }
@@ -66,9 +57,7 @@ public class ABlock {
                 .assignedTime(aBlock.getAssignedTime())
                 .releaseTime(aBlock.getReleaseTime())
                 .block(aBlock.getBlock())
-                .parkingStatus(aBlock.getParkingSlotEnum())
-                .blockInitials(aBlock.getBlockInitials())
-                .slots(aBlock.getSlots().stream().map(ASlotEntity::fromDomain).toList())
+                .slots(aBlock.getSlots().stream().map(SlotEntity::toDomain).toList())
                 .publicId(aBlock.getPublicId().publicId())
                 .build();
     }
@@ -96,28 +85,11 @@ public class ABlock {
     public void setBlock(Blocks block) {
         this.block = block;
     }
-
-    public ParkingSlotEnum getParkingSlotEnum() {
-        return parkingSlotEnum;
-    }
-
-    public void setParkingSlotEnum(ParkingSlotEnum parkingSlotEnum) {
-        this.parkingSlotEnum = parkingSlotEnum;
-    }
-
-    public Set<String> getBlockInitials() {
-        return blockInitials;
-    }
-
-    public void setBlockInitials(Set<String> blockInitials) {
-        this.blockInitials = blockInitials;
-    }
-
-    public List<ASlot> getSlots() {
+    public List<Slot> getSlots() {
         return slots;
     }
 
-    public void setSlots(List<ASlot> slots) {
+    public void setSlots(List<Slot> slots) {
         this.slots = slots;
     }
 

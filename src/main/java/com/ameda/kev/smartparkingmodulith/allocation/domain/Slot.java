@@ -4,6 +4,8 @@ import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import com.ameda.kev.smartparkingmodulith.entry.vo.domain.Assert;
 import org.jilt.Builder;
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -23,6 +25,7 @@ public class Slot {
     private String ownerIdNo;
     private Blocks block;
     private Slots slot;
+    private ABlock aBlock;
 
     public Slot() {
     }
@@ -31,7 +34,8 @@ public class Slot {
                 Instant releaseTime, PublicId publicId,
                 Long dbId, Boolean availableSlot, String vehicleRegNo,
                 String ownerName,
-                String ownerIdNo, Blocks block, Slots slot) {
+                String ownerIdNo, Blocks block, Slots slot,
+                ABlock aBlock) {
         this.allocatedPerson = allocatedPerson;
         this.allocationTime = allocationTime;
         this.releaseTime = releaseTime;
@@ -43,6 +47,7 @@ public class Slot {
         this.ownerIdNo = ownerIdNo;
         this.block = block;
         this.slot = slot;
+        this.aBlock = aBlock;
     }
 
     public void assertMandatoryFields(String allocatedPerson, Instant releaseTime){
@@ -141,5 +146,13 @@ public class Slot {
 
     public void setSlot(Slots slot) {
         this.slot = slot;
+    }
+
+    public ABlock getaBlock() {
+        return aBlock;
+    }
+
+    public void setaBlock(ABlock aBlock) {
+        this.aBlock = aBlock;
     }
 }

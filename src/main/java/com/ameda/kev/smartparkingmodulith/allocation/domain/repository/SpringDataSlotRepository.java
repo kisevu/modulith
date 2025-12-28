@@ -1,15 +1,13 @@
 package com.ameda.kev.smartparkingmodulith.allocation.domain.repository;
 
-import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
-import com.ameda.kev.smartparkingmodulith.allocation.domain.Slot;
-import com.ameda.kev.smartparkingmodulith.allocation.domain.Slots;
+import com.ameda.kev.smartparkingmodulith.allocation.domain.*;
 import com.ameda.kev.smartparkingmodulith.allocation.entity.SlotEntity;
 import com.ameda.kev.smartparkingmodulith.allocation.exceptions.SlotNotFoundException;
+import com.ameda.kev.smartparkingmodulith.allocation.repository.JpaABlockRepository;
 import com.ameda.kev.smartparkingmodulith.allocation.repository.JpaSlotRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -21,15 +19,18 @@ import java.util.UUID;
 @Repository
 public class SpringDataSlotRepository implements SlotRepository{
     private final JpaSlotRepository jpaSlotRepository;
+    private final JpaABlockRepository jpaABlockRepository;
 
-    public SpringDataSlotRepository(JpaSlotRepository jpaSlotRepository) {
+    public SpringDataSlotRepository(JpaSlotRepository jpaSlotRepository,
+                                    JpaABlockRepository jpaABlockRepository) {
         this.jpaSlotRepository = jpaSlotRepository;
+        this.jpaABlockRepository = jpaABlockRepository;
     }
 
     @Override
     public Slot create(Slot slot) {
-        SlotEntity slotEntity = SlotEntity.toDomain(slot);
         // create all blocks with individual slots in there
+        SlotEntity slotEntity = SlotEntity.toDomain(slot);
         SlotEntity savedSlotEntity = jpaSlotRepository.save(slotEntity);
         Slot repoSlot = SlotEntity.fromDomain(savedSlotEntity);
         return repoSlot;
@@ -45,7 +46,6 @@ public class SpringDataSlotRepository implements SlotRepository{
     public Page<Slot> getSlots(Pageable pageable) {
         return null;
     }
-
 
 
     @Override
@@ -74,5 +74,25 @@ public class SpringDataSlotRepository implements SlotRepository{
     @Override
     public long countOccupiedByBlock(Blocks block) {
         return jpaSlotRepository.countOccupiedByBlock(block);
+    }
+
+    @Override
+    public List<SlotEntity> findAvailableSlotsByBlock(Blocks blockName) {
+        return jpaSlotRepository.findAvailableSlotsByBlock(blockName);
+    }
+
+    @Override
+    public int countAvailableSlotsByBlock(Blocks blockName) {
+        return jpaSlotRepository.countAvailableSlotsByBlock(blockName);
+    }
+
+    @Override
+    public void allocateSlot(Long slotId, String person) {
+        jpaSlotRepository.allocateSlot(slotId,person);
+    }
+
+    @Override
+    public Optional<SlotEntity> findById(Long id) {
+        return jpaSlotRepository.findById(id);
     }
 }

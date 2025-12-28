@@ -4,6 +4,7 @@ import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slot;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slots;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.repository.SlotRepository;
+import com.ameda.kev.smartparkingmodulith.allocation.entity.SlotEntity;
 import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,5 +56,24 @@ public class SlotService {
 
     public Long countByOccupiedBlock(Blocks block){
         return slotRepository.countOccupiedByBlock(block);
+    }
+
+    public long countOccupiedByBlock(Blocks block) {
+        return slotRepository.countOccupiedByBlock(block);
+    }
+
+    public List<SlotEntity> findAvailableSlotsByBlock(Blocks blockName) {
+        return slotRepository.findAvailableSlotsByBlock(blockName);
+    }
+    
+    public int countAvailableSlotsByBlock(Blocks blockName) {
+        return slotRepository.countAvailableSlotsByBlock(blockName);
+    }
+
+    public void allocateSlot(Long slotId, String person) {
+        slotRepository.allocateSlot(slotId,person);
+    }
+    public Optional<Slot> findById(Long id){
+        return slotRepository.findById(id).map(SlotEntity::fromDomain);
     }
 }

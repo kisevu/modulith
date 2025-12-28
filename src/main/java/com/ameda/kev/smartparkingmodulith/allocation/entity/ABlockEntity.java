@@ -1,7 +1,8 @@
 package com.ameda.kev.smartparkingmodulith.allocation.entity;
 
+import com.ameda.kev.smartparkingmodulith.allocation.domain.ABlock;
+import com.ameda.kev.smartparkingmodulith.allocation.domain.ABlockBuilder;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
-import com.ameda.kev.smartparkingmodulith.allocation.domain.ParkingSlotEnum;
 import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import com.ameda.kev.smartparkingmodulith.shared.entity.AbstractAuditing;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.*;
  */
 @Builder
 @Entity
-@Table(name = "tbl_slot_blocks")
+@Table(name = "tbl_blocks")
 public class ABlockEntity extends AbstractAuditing<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ablockSequenceGenerator")
@@ -33,33 +34,54 @@ public class ABlockEntity extends AbstractAuditing<Long> {
     @Enumerated(EnumType.STRING)
     private Blocks block;
 
-    @Column(name = "parking_status")
-    @Enumerated(EnumType.STRING)
-    private ParkingSlotEnum parkingStatus;
-
-    @Column(name = "blocks_available")
-    private Set<String> blockInitials;
-
-    @OneToMany(mappedBy = "block", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ASlotEntity> slots = new ArrayList<>();
+    @OneToMany(mappedBy = "block", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SlotEntity> slots = new ArrayList<>();
 
     @Column(name = "public_id", nullable = false, unique = true)
     private UUID publicId;
+
+    @Transient
+    public boolean isFull(){
+        return getAvailableSlots().isEmpty();
+    }
+
+    public List<SlotEntity> getAvailableSlots(){
+        return slots.stream().filter(SlotEntity::getAvailableSlot).toList();
+    }
 
     public ABlockEntity() {
     }
 
 
-    public ABlockEntity(Long id, Instant assignedTime, Instant releaseTime, Blocks block,
-                        ParkingSlotEnum parkingStatus, Set<String> blockInitials, List<ASlotEntity> slots, UUID publicId) {
+    public ABlockEntity(Long id, Instant assignedTime, Instant releaseTime, Blocks block
+                    ,List<SlotEntity> slots, UUID publicId) {
         this.id = id;
         this.assignedTime = assignedTime;
         this.releaseTime = releaseTime;
         this.block = block;
-        this.parkingStatus = parkingStatus;
-        this.blockInitials = blockInitials;
         this.slots = slots;
         this.publicId = publicId;
+    }
+
+
+    public static ABlockEntity fromDomain(ABlock aBlock){
+        return ABlockEntityBuilder.aBlockEntity()
+                .assignedTime(aBlock.getAssignedTime())
+                .releaseTime(aBlock.getReleaseTime())
+                .block(aBlock.getBlock())
+                .slots(aBlock.getSlots().stream().map(SlotEntity::toDomain).toList())
+                .publicId(aBlock.getPublicId().publicId())
+                .build();
+    }
+
+    public static ABlock toDomain(ABlockEntity aBlockEntity){
+        return ABlockBuilder.aBlock()
+                .assignedTime(aBlockEntity.getAssignedTime())
+                .releaseTime(aBlockEntity.getReleaseTime())
+                .block(aBlockEntity.getBlock())
+                .slots(aBlockEntity.getSlots().stream().map(SlotEntity::fromDomain).toList())
+                .publicId(new PublicId(aBlockEntity.getPublicId()))
+                .build();
     }
 
     @Override
@@ -95,27 +117,11 @@ public class ABlockEntity extends AbstractAuditing<Long> {
         this.block = block;
     }
 
-    public ParkingSlotEnum getParkingStatus() {
-        return parkingStatus;
-    }
-
-    public void setParkingStatus(ParkingSlotEnum parkingStatus) {
-        this.parkingStatus = parkingStatus;
-    }
-
-    public Set<String> getBlockInitials() {
-        return blockInitials;
-    }
-
-    public void setBlockInitials(Set<String> blockInitials) {
-        this.blockInitials = blockInitials;
-    }
-
-    public List<ASlotEntity> getSlots() {
+    public List<SlotEntity> getSlots() {
         return slots;
     }
 
-    public void setSlots(List<ASlotEntity> slots) {
+    public void setSlots(List<SlotEntity> slots) {
         this.slots = slots;
     }
 
