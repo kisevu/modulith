@@ -1,8 +1,10 @@
 package com.ameda.kev.smartparkingmodulith.allocation.entity;
 
+import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slot;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.SlotBuilder;
-import com.ameda.kev.smartparkingmodulith.allocation.vo.SlotPublicId;
+import com.ameda.kev.smartparkingmodulith.allocation.domain.Slots;
+import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import com.ameda.kev.smartparkingmodulith.shared.entity.AbstractAuditing;
 import jakarta.persistence.*;
 import org.jilt.Builder;
@@ -47,6 +49,19 @@ public class SlotEntity extends AbstractAuditing<Long> {
     @Column(name = "owner_id_no")
     private String ownerIdNo;
 
+    @Enumerated(EnumType.STRING)
+    @Column( name = "assigned_block")
+    private Blocks block;
+
+    @Enumerated(EnumType.STRING)
+    @Column( name = "assigned_slot")
+    private Slots slot;
+
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name = "bloc_id", referencedColumnName = "id")
+    private ABlockEntity aBlockEntity;
+
+
     public SlotEntity() {
     }
 
@@ -54,7 +69,10 @@ public class SlotEntity extends AbstractAuditing<Long> {
                       Boolean availableSlot,
                       String vehicleRegNo,
                       String ownerIdNo,
-                      String ownerName) {
+                      String ownerName,
+                      Blocks block,
+                      Slots slot,
+                      ABlockEntity aBlockEntity) {
         this.id = id;
         this.allocatedPerson = allocatedPerson;
         this.allocationTime = allocationTime;
@@ -64,6 +82,9 @@ public class SlotEntity extends AbstractAuditing<Long> {
         this.vehicleRegNo = vehicleRegNo;
         this.ownerName = ownerName;
         this.ownerIdNo = ownerIdNo;
+        this.block = block;
+        this.slot = slot;
+        this.aBlockEntity = aBlockEntity;
     }
 
     public static Slot fromDomain(SlotEntity slotEntity){
@@ -71,12 +92,14 @@ public class SlotEntity extends AbstractAuditing<Long> {
                .allocatedPerson(slotEntity.getAllocatedPerson())
                .allocationTime(slotEntity.getAllocationTime())
                .releaseTime(slotEntity.getReleaseTime())
-               .publicId(new SlotPublicId(slotEntity.getPublicId()))
+               .publicId(new PublicId(slotEntity.getPublicId()))
                .dbId(slotEntity.getId())
                .availableSlot(true)
                .vehicleRegNo(slotEntity.getVehicleRegNo())
                .ownerName(slotEntity.getOwnerName())
                .ownerIdNo(slotEntity.getOwnerIdNo())
+               .block(slotEntity.getBlock())
+               .slot(slotEntity.getSlot())
                .build();
     }
 
@@ -90,39 +113,10 @@ public class SlotEntity extends AbstractAuditing<Long> {
                 .vehicleRegNo(slot.getVehicleRegNo())
                 .ownerName(slot.getOwnerName())
                 .ownerIdNo(slot.getOwnerIdNo())
+                .block(slot.getBlock())
+                .slot(slot.getSlot())
                 .build();
-    }
 
-    public String getOwnerIdNo() {
-        return ownerIdNo;
-    }
-
-    public void setOwnerIdNo(String ownerIdNo) {
-        this.ownerIdNo = ownerIdNo;
-    }
-
-    public Boolean getAvailableSlot() {
-        return availableSlot;
-    }
-
-    public void setAvailableSlot(Boolean availableSlot) {
-        this.availableSlot = availableSlot;
-    }
-
-    public String getVehicleRegNo() {
-        return vehicleRegNo;
-    }
-
-    public void setVehicleRegNo(String vehicleRegNo) {
-        this.vehicleRegNo = vehicleRegNo;
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
     }
 
     @Override
@@ -164,6 +158,62 @@ public class SlotEntity extends AbstractAuditing<Long> {
 
     public void setPublicId(UUID publicId) {
         this.publicId = publicId;
+    }
+
+    public Boolean getAvailableSlot() {
+        return availableSlot;
+    }
+
+    public void setAvailableSlot(Boolean availableSlot) {
+        this.availableSlot = availableSlot;
+    }
+
+    public String getVehicleRegNo() {
+        return vehicleRegNo;
+    }
+
+    public void setVehicleRegNo(String vehicleRegNo) {
+        this.vehicleRegNo = vehicleRegNo;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getOwnerIdNo() {
+        return ownerIdNo;
+    }
+
+    public void setOwnerIdNo(String ownerIdNo) {
+        this.ownerIdNo = ownerIdNo;
+    }
+
+    public Blocks getBlock() {
+        return block;
+    }
+
+    public void setBlock(Blocks block) {
+        this.block = block;
+    }
+
+    public Slots getSlot() {
+        return slot;
+    }
+
+    public void setSlot(Slots slot) {
+        this.slot = slot;
+    }
+
+    public ABlockEntity getaBlockEntity() {
+        return aBlockEntity;
+    }
+
+    public void setaBlockEntity(ABlockEntity aBlockEntity) {
+        this.aBlockEntity = aBlockEntity;
     }
 
     @Override

@@ -1,9 +1,10 @@
 package com.ameda.kev.smartparkingmodulith.allocation.services;
 
+import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slot;
-import com.ameda.kev.smartparkingmodulith.allocation.domain.SlotBuilder;
+import com.ameda.kev.smartparkingmodulith.allocation.domain.Slots;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.repository.SlotRepository;
-import com.ameda.kev.smartparkingmodulith.allocation.vo.SlotPublicId;
+import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,7 +30,7 @@ public class SlotService {
         return slotRepository.create(slot);
     }
 
-    public Optional<Slot> getASlot(SlotPublicId slotPublicId){
+    public Optional<Slot> getASlot(PublicId slotPublicId){
         return slotRepository.getSlot(slotPublicId.publicId());
     }
 
@@ -38,9 +39,10 @@ public class SlotService {
     }
 
     public Slot updateSlot(String name, Instant allocationTime, Instant releaseTime,
-                           String vehicleRegNo, String ownerIdNo, UUID publicId){
+                           String vehicleRegNo, String ownerIdNo,
+                           Blocks block, Slots slots, UUID publicId){
         Slot slot = slotRepository
-                .updateSlot(name, allocationTime, releaseTime, vehicleRegNo, ownerIdNo, publicId)
+                .updateSlot(name, allocationTime, releaseTime, vehicleRegNo, ownerIdNo, block,slots,publicId)
                 .stream()
                 .findFirst()
                 .get();
@@ -51,5 +53,7 @@ public class SlotService {
         return slotRepository.findAvailableSlots();
     }
 
-
+    public Long countByOccupiedBlock(Blocks block){
+        return slotRepository.countOccupiedByBlock(block);
+    }
 }

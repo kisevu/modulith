@@ -5,5 +5,5 @@ import java.util.UUID;
 /**
  * Author: kev.Ameda
  */
-public record SlotPublicId(UUID publicId) {
+public record PublicId(UUID publicId) {
 }

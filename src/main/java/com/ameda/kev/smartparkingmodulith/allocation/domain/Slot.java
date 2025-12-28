@@ -1,6 +1,6 @@
 package com.ameda.kev.smartparkingmodulith.allocation.domain;
 
-import com.ameda.kev.smartparkingmodulith.allocation.vo.SlotPublicId;
+import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import com.ameda.kev.smartparkingmodulith.entry.vo.domain.Assert;
 import org.jilt.Builder;
 import java.time.Instant;
@@ -15,21 +15,23 @@ public class Slot {
     private String allocatedPerson;
     private Instant allocationTime;
     private Instant releaseTime;
-    private SlotPublicId publicId;
+    private PublicId publicId;
     private Long dbId;
     private Boolean availableSlot;
     private String vehicleRegNo;
     private String ownerName;
     private String ownerIdNo;
+    private Blocks block;
+    private Slots slot;
 
     public Slot() {
     }
 
     public Slot(String allocatedPerson, Instant allocationTime,
-                Instant releaseTime, SlotPublicId publicId,
+                Instant releaseTime, PublicId publicId,
                 Long dbId, Boolean availableSlot, String vehicleRegNo,
                 String ownerName,
-                String ownerIdNo) {
+                String ownerIdNo, Blocks block, Slots slot) {
         this.allocatedPerson = allocatedPerson;
         this.allocationTime = allocationTime;
         this.releaseTime = releaseTime;
@@ -39,6 +41,8 @@ public class Slot {
         this.vehicleRegNo = vehicleRegNo;
         this.ownerName = ownerName;
         this.ownerIdNo = ownerIdNo;
+        this.block = block;
+        this.slot = slot;
     }
 
     public void assertMandatoryFields(String allocatedPerson, Instant releaseTime){
@@ -47,7 +51,8 @@ public class Slot {
     }
 
     public void initDefaultFields(){
-        this.publicId = new SlotPublicId(UUID.randomUUID());
+        this.publicId = new PublicId(UUID.randomUUID());
+        this.setAvailableSlot(true);
     }
 
     public String getAllocatedPerson() {
@@ -74,11 +79,11 @@ public class Slot {
         this.releaseTime = releaseTime;
     }
 
-    public SlotPublicId getPublicId() {
+    public PublicId getPublicId() {
         return publicId;
     }
 
-    public void setPublicId(SlotPublicId publicId) {
+    public void setPublicId(PublicId publicId) {
         this.publicId = publicId;
     }
 
@@ -120,5 +125,21 @@ public class Slot {
 
     public void setOwnerIdNo(String ownerIdNo) {
         this.ownerIdNo = ownerIdNo;
+    }
+
+    public Blocks getBlock() {
+        return block;
+    }
+
+    public void setBlock(Blocks block) {
+        this.block = block;
+    }
+
+    public Slots getSlot() {
+        return slot;
+    }
+
+    public void setSlot(Slots slot) {
+        this.slot = slot;
     }
 }

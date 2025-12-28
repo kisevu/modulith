@@ -1,6 +1,8 @@
 package com.ameda.kev.smartparkingmodulith.allocation.domain.repository;
 
+import com.ameda.kev.smartparkingmodulith.allocation.domain.Blocks;
 import com.ameda.kev.smartparkingmodulith.allocation.domain.Slot;
+import com.ameda.kev.smartparkingmodulith.allocation.domain.Slots;
 import com.ameda.kev.smartparkingmodulith.allocation.entity.SlotEntity;
 import com.ameda.kev.smartparkingmodulith.allocation.exceptions.SlotNotFoundException;
 import com.ameda.kev.smartparkingmodulith.allocation.repository.JpaSlotRepository;
@@ -27,6 +29,7 @@ public class SpringDataSlotRepository implements SlotRepository{
     @Override
     public Slot create(Slot slot) {
         SlotEntity slotEntity = SlotEntity.toDomain(slot);
+        // create all blocks with individual slots in there
         SlotEntity savedSlotEntity = jpaSlotRepository.save(slotEntity);
         Slot repoSlot = SlotEntity.fromDomain(savedSlotEntity);
         return repoSlot;
@@ -43,9 +46,11 @@ public class SpringDataSlotRepository implements SlotRepository{
         return null;
     }
 
+
+
     @Override
-    public Optional<Slot> updateSlot(String ownerName, Instant entryTime, Instant exitTime, String vehicleRegNo, String ownerIdNo, UUID publicId) {
-        jpaSlotRepository.updateSlot(ownerName, entryTime, exitTime, vehicleRegNo, ownerIdNo, publicId);
+    public Optional<Slot> updateSlot(String ownerName, Instant entryTime, Instant exitTime, String vehicleRegNo, String ownerIdNo, Blocks block, Slots slot, UUID publicId) {
+        jpaSlotRepository.updateSlot(ownerName, entryTime, exitTime, vehicleRegNo, ownerIdNo,block,slot, publicId);
         Optional<Slot> byOwnerIdNo = this.findByOwnerIdNo(ownerIdNo);
 
         if (byOwnerIdNo.isPresent()){
@@ -64,5 +69,10 @@ public class SpringDataSlotRepository implements SlotRepository{
     @Override
     public Optional<Slot> findByOwnerIdNo(String ownerIdNo) {
         return jpaSlotRepository.findByOwnerIdNo(ownerIdNo).map(SlotEntity::fromDomain);
+    }
+
+    @Override
+    public long countOccupiedByBlock(Blocks block) {
+        return jpaSlotRepository.countOccupiedByBlock(block);
     }
 }
