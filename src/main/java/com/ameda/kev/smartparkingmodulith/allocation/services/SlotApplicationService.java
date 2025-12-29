@@ -12,16 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-
 import java.util.*;
 
 /**
  * Author: kev.Ameda
  */
 @Service
+@Transactional
 public class SlotApplicationService {
 
     private final SlotService slotService;
@@ -36,6 +36,26 @@ public class SlotApplicationService {
         return slotService.createSlot(slot);
     }
 
+    /**
+    * It is a good practice to make use of async processing for long-running tasks.s
+     * This helps to give timely feedback to the waiting user and provide substantial evidence of the
+     * success of the process and a way for them to track the status of the process underway.
+     * Spring boot provides for the @Async annotation, but in order to have the flexibility of providing the
+     * queue capacity, the durability of the task in the queue, and the max pool size, we ought to create our
+     * own ThreadPool task executor for that. It has been done in the shared folder
+     *
+     * @EventListener is synchronous in nature hence blocking the publishing thread until all listeners complete
+     * However, I have included the @Async on top of it to make it asynchronous hence the publisher proceeds with other
+     * tasks and does not block the publisher thread.
+     *
+     * There can only be two return types for where @Async is used and can be either void / CompletableFuture.
+     * CompletableFuture return type is used where we need chaining of the result.
+     *
+     * N/B: In an event you are working in a transaction flow and using @Async, and you've created a ThreadPool.
+     * Then make sure to put the @Async in a Transactional context as well.
+    * */
+
+    @Async(value = "asyncTaskExecutor")
     @EventListener
     public void allocateSlot(VehicleParkingEvent event){
         // find available slot to allocate0 = {Slot@14380}
@@ -63,8 +83,13 @@ public class SlotApplicationService {
             if (slot != null ){
                 log.info("Successfully allocated a slot: {}", slot.getSlot());
             }
+
+            //see the executed thread per flow
+            log.info("Updated the available marked slot : {}",Thread.currentThread().getName());
         }
     }
+
+
 
     @Transactional(readOnly = true)
     public Optional<Slot> getAslot(PublicId slotPublicId){

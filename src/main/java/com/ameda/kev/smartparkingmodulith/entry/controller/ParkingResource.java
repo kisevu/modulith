@@ -36,6 +36,7 @@ public class ParkingResource {
         if( parkingSpot == null ){
             return ResponseEntity.badRequest().build();
         }
+        log.info("Assign a parking slot : {}",Thread.currentThread().getName());
         return ResponseEntity.ok(RestParkingResponse.from(parkingSpot));
     }
 
