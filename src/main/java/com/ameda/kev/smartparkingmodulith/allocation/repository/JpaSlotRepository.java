@@ -65,4 +65,9 @@ public interface JpaSlotRepository extends JpaRepository<SlotEntity, Long> {
     @Query("UPDATE SlotEntity s SET s.availableSlot = false, s.allocatedPerson =: person  WHERE s.id =: slotId")
     void allocateSlot(@Param("slotId") Long slotId, @Param("person") String person);
 
+    @Modifying
+    @Query("UPDATE SlotEntity s SET s.block = :blockName, s.slot = :slotName " +
+            "WHERE s.block IS NULL AND s.slot IS NULL")
+    void update(@Param("blockName") Blocks blockName,
+                         @Param("slotName") Slots slotName);
 }

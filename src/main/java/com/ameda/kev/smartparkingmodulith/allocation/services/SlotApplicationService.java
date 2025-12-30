@@ -24,12 +24,17 @@ import java.util.*;
 @Transactional
 public class SlotApplicationService {
 
+    private final KafkaConsumer kafkaConsumer;
+
     private final SlotService slotService;
     private final Logger log = LoggerFactory.getLogger(SlotApplicationService.class);
 
-    public SlotApplicationService(SlotRepository slotRepository) {
+    public SlotApplicationService(KafkaConsumer kafkaConsumer, SlotRepository slotRepository) {
+        this.kafkaConsumer = kafkaConsumer;
         this.slotService = new SlotService(slotRepository);
     }
+
+
 
     @Transactional
     public Slot  createSlot(Slot slot){
@@ -53,6 +58,20 @@ public class SlotApplicationService {
      *
      * N/B: In an event you are working in a transaction flow and using @Async, and you've created a ThreadPool.
      * Then make sure to put the @Async in a Transactional context as well.
+     *
+     * ------------------------------------------------------
+     *
+     *  N/B allocateSlot(VehicleParkingEvent event) takes use of @sync with @eventPublisher
+     *
+     *
+     *  -------------------------------------------------------------------------------
+     *
+     *  Virtual Threads:
+     *  Light-weight threads for handling high concurrency with minimal overhead. Virtual threads are instances of
+     *  java.lang.Thread but are not tied to the o/s threads and the JVM schedules them onto available platform threads
+     *  suspending them during blocking operations like I/O to free up resources.
+     *  Spring boot supports virtual threads for @Async via auto-configuration. End game virtual concepts boosts
+     *  performance in I/O heavy workloads.
     * */
 
     @Async(value = "asyncTaskExecutor")
@@ -113,6 +132,8 @@ public class SlotApplicationService {
         return slotEntity;
     }
 
+
+
     public void deallocate(Long slotId){
         Slot slot = slotService.findById(slotId).orElseThrow();
         slot.setAvailableSlot(true);
@@ -123,5 +144,6 @@ public class SlotApplicationService {
     public boolean isBlockFull(Blocks blockName){
         return slotService.countAvailableSlotsByBlock(blockName) == 0;
     }
+
 
 }

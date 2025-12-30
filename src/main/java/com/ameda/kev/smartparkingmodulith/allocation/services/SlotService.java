@@ -50,6 +50,11 @@ public class SlotService {
         return slot;
     }
 
+    public Slot updateSlot(Blocks blocks,Slots slots){
+        slotRepository.update(blocks,slots);
+        return null;
+    }
+
     public List<Slot> findAvailableSlots(){
         return slotRepository.findAvailableSlots();
     }

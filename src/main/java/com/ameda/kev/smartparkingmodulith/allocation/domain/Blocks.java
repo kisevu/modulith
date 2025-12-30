@@ -9,35 +9,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Author: kev.Ameda
  */
 public enum Blocks {
-    BLOCKA("BLOCK A",4,ParkingSlotEnum.DEFAULT_STATUS),
-    BLOCKB("BLOCK B",4, ParkingSlotEnum.DEFAULT_STATUS),
-    BLOCKC("BLOCK C",4,ParkingSlotEnum.DEFAULT_STATUS);
+    BLOCKA("BLOCK A"),
+    BLOCKB("BLOCK B"),
+    BLOCKC("BLOCK C");
+
 
     private final String displayName;
-    private final Integer maxSlots;
-    private final ParkingSlotEnum status;
 
-    //Track occupied count per block
-    private static final Map<Blocks, AtomicInteger> occupiedCounts
-            = new ConcurrentHashMap<>();
-
-    Blocks(String displayName, Integer maxSlots, ParkingSlotEnum status) {
+    Blocks(String displayName) {
         this.displayName = displayName;
-        this.maxSlots = maxSlots;
-        this.status = status;
     }
 
     public String getDisplayName() {
         return displayName;
     }
-
-    public Integer getMaxSlots() {
-        return maxSlots;
-    }
-
-    public ParkingSlotEnum getStatus() {
-        return status;
-    }
-
-
 }

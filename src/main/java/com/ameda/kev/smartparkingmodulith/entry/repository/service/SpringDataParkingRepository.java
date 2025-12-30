@@ -39,4 +39,9 @@ public class SpringDataParkingRepository implements ParkingRepository {
     public Page<Parking> findAll(Pageable pageable) {
        return  jpaParkingRepository.findAll(pageable).map(ParkingEntity::toDomain);
     }
+
+    @Override
+    public Optional<Parking> findById(Long id) {
+        return jpaParkingRepository.findById(id).map(ParkingEntity::toDomain);
+    }
 }

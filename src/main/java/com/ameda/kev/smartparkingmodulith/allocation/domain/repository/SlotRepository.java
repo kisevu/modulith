@@ -44,4 +44,5 @@ public interface SlotRepository {
 
     Optional<SlotEntity> findById(Long id);
 
+    void update(Blocks blocks, Slots slots);
 }

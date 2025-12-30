@@ -14,4 +14,6 @@ public interface ParkingRepository {
     Parking save(Parking parking);
     Optional<Parking> findByPublicId(UUID publicId);
     Page<Parking> findAll(Pageable pageable);
+
+    Optional<Parking> findById(Long id);
 }

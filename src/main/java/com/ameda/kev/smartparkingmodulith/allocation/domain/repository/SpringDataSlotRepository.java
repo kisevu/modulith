@@ -95,4 +95,9 @@ public class SpringDataSlotRepository implements SlotRepository{
     public Optional<SlotEntity> findById(Long id) {
         return jpaSlotRepository.findById(id);
     }
+
+    @Override
+    public void update(Blocks blocks, Slots slots) {
+        jpaSlotRepository.update(blocks,slots);
+    }
 }
