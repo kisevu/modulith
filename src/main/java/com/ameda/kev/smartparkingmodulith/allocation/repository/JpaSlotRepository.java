@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -65,9 +66,10 @@ public interface JpaSlotRepository extends JpaRepository<SlotEntity, Long> {
     @Query("UPDATE SlotEntity s SET s.availableSlot = false, s.allocatedPerson =: person  WHERE s.id =: slotId")
     void allocateSlot(@Param("slotId") Long slotId, @Param("person") String person);
 
+    @Transactional
     @Modifying
-    @Query("UPDATE SlotEntity s SET s.block = :blockName, s.slot = :slotName " +
-            "WHERE s.block IS NULL AND s.slot IS NULL")
+    @Query("UPDATE SlotEntity s SET s.blocks = :blockName, s.slot = :slotName " +
+            "WHERE s.blocks IS NULL AND s.slot IS NULL")
     void update(@Param("blockName") Blocks blockName,
                          @Param("slotName") Slots slotName);
 }

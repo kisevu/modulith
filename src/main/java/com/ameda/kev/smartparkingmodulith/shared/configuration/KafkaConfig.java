@@ -29,6 +29,17 @@ public class KafkaConfig {
     }
 
     @Bean
+    public NewTopic createTransactionTopic(){
+        return new NewTopic("transactions",3, (short)1 );
+    }
+
+    @Bean
+    public NewTopic createFraudAlertTopic(){
+        return new NewTopic("fraud-alerts",3, (short)1 );
+    }
+
+
+    @Bean
     public ObjectMapper objectMapper(){
         return new ObjectMapper();
     }

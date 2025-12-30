@@ -8,7 +8,6 @@ import com.ameda.kev.smartparkingmodulith.allocation.vo.PublicId;
 import com.ameda.kev.smartparkingmodulith.shared.entity.AbstractAuditing;
 import jakarta.persistence.*;
 import org.jilt.Builder;
-
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -53,6 +52,10 @@ public class SlotEntity extends AbstractAuditing<Long> {
     @Column( name = "assigned_slot")
     private Slots slot;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assigned_block")
+    private Blocks blocks;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "block_id")
     private ABlockEntity block;
@@ -62,12 +65,8 @@ public class SlotEntity extends AbstractAuditing<Long> {
     }
 
     public SlotEntity(Long id, String allocatedPerson, Instant allocationTime, Instant releaseTime, UUID publicId,
-                      Boolean availableSlot,
-                      String vehicleRegNo,
-                      String ownerIdNo,
-                      String ownerName,
-                      Slots slot,
-                      ABlockEntity aBlockEntity) {
+                      Boolean availableSlot, String vehicleRegNo, String ownerName,
+                      String ownerIdNo, Slots slot, Blocks blocks, ABlockEntity block) {
         this.id = id;
         this.allocatedPerson = allocatedPerson;
         this.allocationTime = allocationTime;
@@ -77,8 +76,9 @@ public class SlotEntity extends AbstractAuditing<Long> {
         this.vehicleRegNo = vehicleRegNo;
         this.ownerName = ownerName;
         this.ownerIdNo = ownerIdNo;
-        this.block = aBlockEntity;
         this.slot = slot;
+        this.blocks = blocks;
+        this.block = block;
     }
 
     public static Slot fromDomain(SlotEntity slotEntity){
@@ -198,6 +198,14 @@ public class SlotEntity extends AbstractAuditing<Long> {
 
     public void setaBlockEntity(ABlockEntity aBlockEntity) {
         this.block = aBlockEntity;
+    }
+
+    public Blocks getBlocks() {
+        return blocks;
+    }
+
+    public void setBlocks(Blocks blocks) {
+        this.blocks = blocks;
     }
 
     @Override
